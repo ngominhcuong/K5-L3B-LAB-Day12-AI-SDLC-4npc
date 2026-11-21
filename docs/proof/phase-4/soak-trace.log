@@ -1,0 +1,15 @@
+D1  gather_end docked  I1..I4         ( 4 cá thể) | active_upgrades {}
+D2  gather_end docked  I5..I8         ( 4 cá thể) | active_upgrades {}
+D3  gather_end docked  I9..I12        ( 4 cá thể) | active_upgrades {}
+D4  gather_end docked  I13..I16       ( 4 cá thể) | active_upgrades {}
+D5  gather_end docked  I17..I20       ( 4 cá thể) | active_upgrades {}
+D6  gather_end docked  I21..I24       ( 4 cá thể) | active_upgrades {}
+D7  gather_end docked  I25..I28       ( 4 cá thể) | active_upgrades {}
+D8  gather_end docked  I29..I32       ( 4 cá thể) | active_upgrades {}
+D9  gather_end docked  I33..I36       ( 4 cá thể) | active_upgrades {'oxygen': 1}
+D10 gather_end docked  I37..I40       ( 4 cá thể) | active_upgrades {'oxygen': 1}
+soak: {'days': 10, 'days_completed': 10, 'crashes': 0}
+day_plan Ngày 2..10 khớp D((n-1)%5+1): True (9/9)
+id cá thể không trùng xuyên 10 Ngày: True | tổng 40
+mỗi Ngày có phase_start quan + shop: True
+earned không giảm: True [43, 43, 86, 129, 129, 172, 172, 215, 258, 258]

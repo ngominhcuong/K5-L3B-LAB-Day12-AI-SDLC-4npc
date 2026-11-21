@@ -1,0 +1,13 @@
+# soak_cmd = python3 -m chonoi.soak (main 54a98cf, bản của ngominhcuong) — kiểm bởi QA
+$ python3 -m chonoi.soak --seed 7 --days 10 --out docs/proof/phase-4/soak.json
+exit=0
+$ python3 -m chonoi.soak --seed 7 --days 10 --out docs/proof/phase-4/soak-run2.json
+exit=0
+keys: ['crashes', 'days', 'days_completed', 'duration_s', 'results']
+results keys: ['day', 'earned', 'reputation', 'score']
+duration_s: 6.4053 5.3801
+gameplay fields identical: True
+PASS (days_completed == days and crashes == 0): True
+soak --days 0 -> exit 2
+soak --days x -> exit 2
+soak --seed 7 -> exit 2
