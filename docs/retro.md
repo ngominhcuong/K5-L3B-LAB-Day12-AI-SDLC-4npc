@@ -17,3 +17,4 @@
 - Số liệu: số commit theo người, cách đọc code của nhau, token theo người:
 - Một lần AI sai và cách nhóm phát hiện:
 - Nếu làm lại, đổi gì:
+- `nguyenquangtiep`: 4 commit đầu của tôi bị GitHub tính cho tài khoản phụ `asuradeva-afk`, vì git trên máy ghi email của tài khoản đó, dù tôi push bằng `nguyenquangtiep`. Tôi chỉ phát hiện khi rà trang Contributors ở Phase 4. Lần sau mỗi người nên chạy `git config user.email` và mở trang Contributors ngay sau commit đầu tiên của Phase 1.
