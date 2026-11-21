@@ -1,0 +1,64 @@
+# Phase 4 Integrator — bản bàn giao local trên nền main 7fdce58
+# Windows / Python 3.12.10 / Playwright 1.65.2 / Chromium 159.0.8154.6
+
+python -X utf8 tools/check_team.py
+OK: 6 thành viên: tranha1764, ngthanhtamtb, danhhieu204ns, ngominhcuong, nguyenquangtiep, hungdt31
+
+PYTHONPATH=tests;. python -X utf8 -m unittest discover -s tests -v
+Ran 92 tests in 31.394s
+OK
+
+Headless --seed 1 --ticks 600, chạy hai lần mỗi mode
+gather ends at tick_limit; byte-identical SHA-256 901565d345dc610cf025fdf5d8d49f041e938b467c3493361549cd8cb6a3265b
+quan ends at tick_limit; byte-identical SHA-256 75167f35984edf408f80aa4c7f7c2ec02887efcb7bd9486ac7a5d3ac438db344
+day --days 1 ends at tick_limit; byte-identical SHA-256 b454e7cbf9f3fee0c48ee958f5028dfa6457a2052d95f11787158f0b756d1f88
+
+Inputs từ docs/proof/phase-3/integration.md
+gather_end reason=docked; 11 items; quan tick 0 stock equals inventory items
+served=4; paid=4; quan_end=1
+integration-gather.jsonl, integration-kho.json, integration-quan.jsonl, day5.jsonl match Phase 3 after EOL normalization
+day5: 5 stock handoffs; 23 valid locked prices; no bad orders or monster hits; earned=1530 score=2030
+qa_autoplay seed 1 day1: days_completed=1 earned=189 score=589
+
+python -X utf8 -m chonoi.soak --seed 7 --days 10 --out <temp>/soak.json
+Hai lần: days_completed=10 crashes=0; gameplay giống nhau khi bỏ duration_s
+python -X utf8 tools/qa_soak_trace.py 7 10
+10/10 kế hoạch; đủ gather → quan → shop; 40 ID không trùng; earned không giảm
+
+python -X utf8 -m chonoi.bench --seed 42 --duration 30 --out <temp>/bench.json
+bench avg_fps=143.96 p1_low_fps=137.07 frames=4319 measured_s=30.001 load_ms=407.3
+--duration 0: exit 2, không sinh báo cáo
+
+Chromium 1280×720 — màn gather có Cá Sấu chase và oxy dưới 25%, màn quan còn 11 giây kiên nhẫn tại T1
+Thủy quái!, Hết hơi!, Sắp rời bàn: màu gốc → #ffffff → màu gốc khi Tab/Space/Enter
+?demo=fish: mục tiêu bắt cá hiển thị, Space không gửi /input
+prefers-reduced-motion: đến ngay (2,1), so với nội suy đến (0.5,0.25) ở chế độ thường
+
+Manifest thử nghiệm trong bản giải nén tạm
+bench_cmd=python3 -m chonoi.bench; smoke 1 giây sinh JSON hợp lệ; manifest của repo giữ nguyên
+
+Smoke ZIP sạch — python -m chonoi.live --mode day --days 2 --port 0
+Windows 3.12.10: GET / 200; GET /state 200, mode=day phase=gather day=1; 92/92 test
+Ubuntu WSL 3.12.3: GET / 200; GET /state 200, mode=day phase=gather day=1; 92/92 test
+
+# Sau khi cập nhật main 436fdfa (PR #33) và sửa điều khiển
+Chromium 159.0.8154.6, giao diện thật từ working tree
+day vào quan: giữ W qua lúc nhấn E, move[1] đổi -1 → +1, z tăng
+Trong quan của day và quan độc lập: W/↑ tăng z, S/↓ giảm z
+Trong gather: W/↑ giảm độ sâu, S/↓ tăng độ sâu
+Phím H bật/tắt tương phản cao; ba cảnh báo hiện chữ vàng #ffeb3b khi bật
+python -X utf8 -m unittest discover -s tests (PYTHONPATH=tests;.)
+Ran 92 tests in 32.635s
+OK
+
+# Nhánh Integrator sau khi khai cả bench_cmd và soak_cmd trong manifest
+Ubuntu WSL / Python 3.12.3: build_cmd exit 0; tools/check_team.py OK 6 thành viên
+PYTHONPATH=tests:. python3 -m unittest discover -s tests -v
+Ran 92 tests in 34.505s
+OK
+gather, quan, day: 600 tick; mỗi mode có hai đầu ra giống từng byte
+Hồi quy P3: 4 file khớp; bàn giao 11 cá thể; served=4 paid=4 quan_end=1
+day5: 5 lượt bàn giao kho, 23 giá chốt đúng; không có đơn sai kế hoạch hoặc hit sai
+soak_cmd: 10/10 ngày × 2, 0 crash, cùng gameplay; 10/10 kế hoạch, đủ ba pha, 40 ID riêng biệt
+Chromium Windows: ca giữ W rồi nhấn E và ca S trong quán đều đạt; H bật/tắt ba cảnh báo màu #ffeb3b
+bench_cmd seed 42: avg_fps=143.66 p1_low_fps=115.55 frames=4310 measured_s=30.0013 load_ms=348.0

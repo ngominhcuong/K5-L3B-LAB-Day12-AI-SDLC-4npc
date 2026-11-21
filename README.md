@@ -15,17 +15,44 @@ Cách làm việc kỹ thuật là **tự do** (push thẳng, nhánh + PR, pair,
 
 ## Bắt đầu nhanh
 
+Chuẩn bị Python 3.12+ và trình duyệt hiện đại. Game, headless và soak dùng thư viện chuẩn Python.
+
 ```bash
-git clone <fork-của-nhóm> && cd <fork-của-nhóm>
-PYTHONPATH=tests:. python3 -m unittest discover -s tests -v        # smoke test
-python3 -m chonoi.live --mode gather                                # chơi thử trên trình duyệt (tùy chọn)
+git clone https://github.com/ngominhcuong/K5-L3B-LAB-Day12-AI-SDLC-4npc.git
+cd K5-L3B-LAB-Day12-AI-SDLC-4npc
+python3 -m chonoi.live --mode day --days 2
 ```
 
-Game cần chế độ **headless** theo Test Contract (`python3 -m chonoi.headless --mode gather|quan …`) để được chạy và chấm tự động. **Công nghệ không ràng buộc**: khung Python trong `chonoi/` chỉ là gợi ý, chi tiết ở [`docs/STARTER.md`](docs/STARTER.md).
+Mở `http://127.0.0.1:8000/` và nhấn **Enter**. Dùng **WASD** hoặc **mũi tên** để di chuyển, **E** để tương tác, **Space** để bắt cá, **P/Esc** để tạm dừng, **R** để chơi lại và **H** để bật/tắt tương phản cao. Trong Shop, **1** mua oxy, **2** mua máu và **E/Enter** đóng Shop.
+
+## Test, headless và benchmark
+
+```bash
+PYTHONPATH=tests:. python3 -m unittest discover -s tests -v
+python3 -m chonoi.headless --mode gather --seed 1 --ticks 600 --out gather.jsonl
+python3 -m chonoi.soak --seed 7 --days 10 --out soak.json
+```
+
+Headless hỗ trợ `gather`, `quan` và `day`. Với `day`, dùng `--days 1..5`. Trên Windows, dùng `python -X utf8` thay cho `python3` và đặt `$env:PYTHONPATH = 'tests;.'` trước khi chạy test.
+
+Benchmark cần Playwright và Chromium, cài trong cùng môi trường Python.
+
+```bash
+python3 -m pip install playwright
+python3 -m playwright install chromium
+python3 -m chonoi.bench --seed 42 --duration 30 --out bench.json
+```
+
+Benchmark đo canvas 1280×720 sau 3 giây làm nóng. [Lệnh kiểm chứng và đóng gói](docs/release/phase-4.md) · [Khung Python của lab](docs/STARTER.md)
 
 ## Tự do sáng tạo
 
 Ngoài phần đề yêu cầu, nhóm được **thêm** nhân vật, loài cá/cây, sinh vật, món, bản đồ, cơ chế, câu chuyện, đồ họa, âm nhạc… với ba điều kiện: **không phá phần cố định** (tắt ở headless), ghi mục **"Sáng tạo của nhóm"** trong README của nhóm, và **làm lõi đúng trước**.
+
+### Sáng tạo của nhóm
+
+- Cảnh minh họa trong trình duyệt, chẳng hạn `/?demo=fish` để thấy mục tiêu bắt cá và `/?demo=serve` trong chế độ `quan` để thấy mục tiêu phục vụ.
+- Giảm chuyển động theo thiết lập `prefers-reduced-motion` của trình duyệt, giảm nội suy và các hiệu ứng lặp.
 
 ## Lịch 3 giờ
 

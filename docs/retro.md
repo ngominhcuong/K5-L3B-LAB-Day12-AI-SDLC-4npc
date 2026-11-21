@@ -12,6 +12,7 @@
 - QA (`hungdt31`), bài học từ lần đổi schema kho: các lát merge vào `main` khi test đỏ (20/78 ở `39be0e1`), vì mỗi lát chỉ chạy test của mình. Đổi schema là thay đổi phá vỡ, nên **người đổi schema phải chạy toàn bộ test và chuyển fixture cùng PR**, hoặc báo QA trước khi merge. Hai lát dùng chung một giao diện (`day.py` gọi `GatherSim(item_ids=…)`) mà không ai chạy thử cùng nhau, nên lỗi id `I1` lặp mỗi Ngày chỉ lộ ra khi smoke 5 Ngày. **Hành động Phase 4:** CI bắt buộc xanh trước khi merge (người nhận: Integrator `tranha1764`); chạy `tools/qa_autoplay.py` + `qa_check_day.py` trước mỗi tag (người nhận: `hungdt31`).
 
 ## Phase 4 (cuối)
+- **Integrator (`tranha1764`)** — Đã chạy lại luồng `day` 5 ngày từ hành động Phase 2. Khách chỉ gọi món trong kế hoạch và cả 5 lượt bàn giao kho đạt. Kiểm thử thêm lúc giữ W qua chuyển pha vì ca chạy riêng quán không tái hiện lỗi. [Kết quả](proof/phase-4/integrator-release.log)
 - Rà lại hành động Phase 2: đã làm chưa? vì sao?
 - Điều tốt / điều tệ:
 - Số liệu: số commit theo người, cách đọc code của nhau, token theo người:
