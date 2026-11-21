@@ -103,13 +103,19 @@ function keyName(e) { return e.key.length === 1 ? e.key.toLowerCase() : e.key.to
 let showMainMenu = !demo;
 let dismissedIntroKey = "";
 let uiButtons = [];
+const panelBg = (norm = "rgba(32, 22, 16, 0.88)") => (highContrast ? "#000000" : norm);
+const panelEdge = (norm) => (highContrast ? "#ffe600" : norm);
 
-// Chế độ tương phản cao (TICKET-04, AC-P4-07): phím H hoặc ?contrast=high|normal.
+// Chế độ tương phản cao (TICKET-04, AC-P4-07): phím C/H hoặc ?contrast=high|1|normal.
 // Chỉ đổi cách vẽ ở client, không gửi gì lên server nên không ảnh hưởng headless/JSONL.
 const contrastParam = new URLSearchParams(location.search).get("contrast");
-let highContrast = contrastParam === "high";
+let highContrast = contrastParam === "high" || contrastParam === "1"
+  || (contrastParam === null && matchMedia("(prefers-contrast: more)").matches);
 if (contrastParam === null) {
-  try { highContrast = localStorage.getItem("chonoi.contrast") === "high"; } catch (e) { /* trình duyệt chặn storage */ }
+  try {
+    const saved = localStorage.getItem("chonoi.contrast");
+    if (saved === "high" || saved === "normal") highContrast = saved === "high";
+  } catch (e) { /* trình duyệt chặn storage */ }
 }
 const HC_WARN = "#ffeb3b";
 function applyContrast() { cv.style.filter = highContrast ? "contrast(1.25) saturate(1.15)" : ""; }
@@ -149,7 +155,7 @@ function finishShop() {
 
 addEventListener("keydown", (e) => {
   const k = keyName(e);
-  if (k === "h" && !e.repeat) { toggleContrast(); e.preventDefault(); return; }
+  if ((k === "h" || k === "c") && !e.repeat) { toggleContrast(); e.preventDefault(); return; }
   if (snap?.preview) return;
   if (showMainMenu) {
     if (k === "enter" || k === " ") { showMainMenu = false; e.preventDefault(); }
@@ -519,26 +525,28 @@ function drawMainMenu(w, h) {
   text("QUÁN ĂN CHỢ NỔI", w / 2, by + 64, { size: 32, weight: 800, align: "center", color: "#fff5df" });
   text("Phiên bản Anime · Sông nước miền Tây", w / 2, by + 100, { size: 18, weight: 600, align: "center", color: "#ffd68b" });
   text("WASD / Mũi tên: Di chuyển · E: Hái / Cập bến / Nấu & Phục vụ", w / 2, by + 152, { size: 18, align: "center", color: "#e8dfd1", maxWidth: bw - 36 });
-  text("Space: Bắt cá · Esc / P: Tạm dừng · R: Chơi lại · H: Tương phản cao", w / 2, by + 186, { size: 18, align: "center", color: "#e8dfd1", maxWidth: bw - 36 });
-  drawButton(w / 2 - 130, by + 228, 260, 54, "Bắt đầu chơi (Enter)", "#4ea8a1", "#fff0a3", "#ffffff", () => {
+  text("Space: Bắt cá · Esc / P: Tạm dừng · C/H: Tương phản · R: Chơi lại", w / 2, by + 186, { size: 17, align: "center", color: "#e8dfd1", maxWidth: bw - 36 });
+  drawButton(w / 2 - 195, by + 228, 220, 54, "Bắt đầu (Enter)", highContrast ? "#005a5b" : "#4ea8a1", "#fff0a3", "#ffffff", () => {
     showMainMenu = false;
-  }, 20);
+  }, 19);
+  drawButton(w / 2 + 35, by + 228, 160, 54, `Tương phản: ${highContrast ? "Bật" : "Tắt"}`, highContrast ? "#000000" : "#5a3d2b", "#ffe600", "#ffffff", toggleContrast, 16);
 }
 
 function drawPauseMenu(w, h) {
-  ctx.fillStyle = "rgba(10, 14, 18, 0.72)";
+  ctx.fillStyle = "rgba(10, 14, 18, 0.78)";
   ctx.fillRect(0, 0, w, h);
-  const bw = Math.min(440, w - 32), bh = 268;
+  const bw = Math.min(440, w - 32), bh = 296;
   const bx = (w - bw) / 2, by = (h - bh) / 2;
   roundRect(bx, by, bw, bh, 20);
-  ctx.fillStyle = "#332218";
+  ctx.fillStyle = panelBg("#332218");
   ctx.fill();
-  ctx.strokeStyle = "#ffd68b";
+  ctx.strokeStyle = panelEdge("#ffd68b");
   ctx.lineWidth = 2.5;
   ctx.stroke();
-  text("TẠM DỪNG", w / 2, by + 56, { size: 26, weight: 800, align: "center", color: "#fff5df" });
-  drawButton(w / 2 - 135, by + 90, 270, 50, "Tiếp tục (Esc / P)", "#4ea8a1", "#fff0a3", "#ffffff", togglePause, 18);
-  drawButton(w / 2 - 135, by + 154, 270, 50, "Chơi lại (R)", "#8c4a38", "#ffab91", "#fff5df", () => {
+  text("TẠM DỪNG", w / 2, by + 54, { size: 26, weight: 800, align: "center", color: "#fff5df" });
+  drawButton(w / 2 - 135, by + 84, 270, 48, "Tiếp tục (Esc / P)", highContrast ? "#005a5b" : "#4ea8a1", "#fff0a3", "#ffffff", togglePause, 18);
+  drawButton(w / 2 - 135, by + 146, 270, 48, `Tương phản [C]: ${highContrast ? "Bật" : "Tắt"}`, highContrast ? "#000000" : "#5a3d2b", "#ffe600", "#ffffff", toggleContrast, 17);
+  drawButton(w / 2 - 135, by + 208, 270, 48, "Chơi lại (R)", "#8c4a38", "#ffab91", "#fff5df", () => {
     fetch("/restart", { method: "POST" }); lastSent = ""; down.clear();
   }, 18);
   text("H: Tương phản cao · " + (highContrast ? "đang bật" : "đang tắt"), w / 2, by + 244,
@@ -1041,25 +1049,27 @@ function drawGather(w, h, frameTime, alpha) {
 
   // Bầu trời Ghibli sáng trong + mây trôi
   if (oy > 0) {
-    ctx.fillStyle = grads.sky;
+    ctx.fillStyle = highContrast ? "#121a24" : grads.sky;
     ctx.fillRect(0, 0, w, Math.min(h, oy));
-    const cloudShift = reducedMotion.matches ? 0 : (frameTime / 90) % (w + 180);
-    drawCloud((w * 0.15 + cloudShift) % (w + 160) - 80, oy - 3.2 * s, 1.1);
-    drawCloud((w * 0.58 + cloudShift * 0.7) % (w + 160) - 80, oy - 4.2 * s, 1.3);
-    // Dải cây dừa nước xa xa trên đường chân trời
-    ctx.fillStyle = "rgba(65, 104, 70, 0.42)";
-    for (let gx = 4; gx < X; gx += 7) {
-      const cx = sx(gx);
-      if (cx < -60 || cx > w + 60) continue;
-      ctx.beginPath();
-      ctx.arc(cx, oy, 26, Math.PI, 0);
-      ctx.arc(cx + 30, oy, 20, Math.PI, 0);
-      ctx.fill();
+    if (!highContrast) {
+      const cloudShift = reducedMotion.matches ? 0 : (frameTime / 90) % (w + 180);
+      drawCloud((w * 0.15 + cloudShift) % (w + 160) - 80, oy - 3.2 * s, 1.1);
+      drawCloud((w * 0.58 + cloudShift * 0.7) % (w + 160) - 80, oy - 4.2 * s, 1.3);
+      // Dải cây dừa nước xa xa trên đường chân trời
+      ctx.fillStyle = "rgba(65, 104, 70, 0.42)";
+      for (let gx = 4; gx < X; gx += 7) {
+        const cx = sx(gx);
+        if (cx < -60 || cx > w + 60) continue;
+        ctx.beginPath();
+        ctx.arc(cx, oy, 26, Math.PI, 0);
+        ctx.arc(cx + 30, oy, 20, Math.PI, 0);
+        ctx.fill();
+      }
     }
   }
 
   // Lòng sông: nước ngọc lam -> xanh thẫm + tia nắng xuyên nước
-  ctx.fillStyle = grads.water;
+  ctx.fillStyle = highContrast ? "#05070a" : grads.water;
   ctx.fillRect(sx(0), oy, X * s, D * s);
 
   ctx.save();
@@ -1377,9 +1387,10 @@ function drawCrocodileAnime(m, mx, my, s, frameTime, index) {
   }
   ctx.restore();
 
-  // Bản đồ thu nhỏ & nút Tạm dừng góc trên-phải
+  // Bản đồ thu nhỏ & nút Tạm dừng / Tương phản góc trên-phải
   drawMinimap(w, h, X, D, dp, ppos);
-  drawButton(w - 130, 12, 116, 32, "Tạm dừng [P]", "rgba(32, 22, 16, 0.86)", "#ffd68b", "#fff5df", togglePause, 14);
+  drawButton(w - 254, 12, 118, 32, `Tương phản`, panelBg(), panelEdge("#9ce3cf"), "#ffffff", toggleContrast, 13);
+  drawButton(w - 130, 12, 116, 32, "Tạm dừng [P]", panelBg(), panelEdge("#ffd68b"), "#fff5df", togglePause, 14);
 
   if ((snap.monsters || []).some((m) => m.state === "chase")) {
     warnMarker("Thủy quái!", w / 2, 46, w, "#f2b8ff", "#3a194a");
@@ -1433,11 +1444,16 @@ function drawQuan(w, h, frameTime, alpha) {
   const sx = (x) => ox + x * s, sy = (z) => oy + (Z - z) * s;
 
   // Mặt sông đêm toàn màn hình + phản chiếu ánh đèn
-  const night = ctx.createRadialGradient(w / 2, h / 2, 40, w / 2, h / 2, w * 0.72);
-  night.addColorStop(0, "#19303f");
-  night.addColorStop(1, "#091219");
-  ctx.fillStyle = night;
-  ctx.fillRect(0, 0, w, h);
+  if (highContrast) {
+    ctx.fillStyle = "#05070a";
+    ctx.fillRect(0, 0, w, h);
+  } else {
+    const night = ctx.createRadialGradient(w / 2, h / 2, 40, w / 2, h / 2, w * 0.72);
+    night.addColorStop(0, "#19303f");
+    night.addColorStop(1, "#091219");
+    ctx.fillStyle = night;
+    ctx.fillRect(0, 0, w, h);
+  }
 
   // Gợn sóng sông đêm nhẹ
   if (!reducedMotion.matches) {
@@ -1631,7 +1647,8 @@ function drawQuan(w, h, frameTime, alpha) {
   text(handLabel, 24, 92, { size: 16, color: snap.hand ? "#9ce3cf" : "#dccbb7", weight: 700 });
   ctx.restore();
 
-  drawButton(w - 130, 12, 116, 36, "Tạm dừng [P]", "rgba(32, 22, 16, 0.88)", "#ffd68b", "#fff5df", togglePause, 14);
+  drawButton(w - 254, 12, 118, 36, "Tương phản", panelBg(), panelEdge("#9ce3cf"), "#ffffff", toggleContrast, 13);
+  drawButton(w - 130, 12, 116, 36, "Tạm dừng [P]", panelBg(), panelEdge("#ffd68b"), "#fff5df", togglePause, 14);
 
   // Thanh kho nguyên liệu (hỗ trợ cả v1.2 cá thể {id, kind, fresh} và v1.1 đếm)
   const spLimit = spoiledLimit();
