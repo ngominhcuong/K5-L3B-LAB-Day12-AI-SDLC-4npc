@@ -5,6 +5,7 @@ earned không giảm, mỗi Ngày đi đủ gather -> quan -> shop.
     PYTHONPATH=. python3 tools/qa_soak_trace.py 7 10
 """
 import sys
+from unittest.mock import patch
 
 from chonoi import runner, soak
 from chonoi.contract import load_contract
@@ -14,6 +15,14 @@ t = load_contract()["tuning"]
 plans = {p["day"]: p["dishes"] for p in t["day_plan"]}
 seen = []  # (day, name, phase, data)
 _orig_step = runner.Session.step
+_orig_initial_events = runner.Session.initial_events
+
+
+def _spy_initial_events(self):
+    # Ngày 1 phát day_plan và phase_start trước tick đầu tiên.
+    evs = _orig_initial_events(self)
+    seen.extend((e["day"], e["name"], e["phase"], e["data"]) for e in evs)
+    return evs
 
 
 def _spy(self, inp):
@@ -28,20 +37,26 @@ def _spy(self, inp):
     return evs
 
 
-runner.Session.step = _spy
-report = soak.run_soak(seed, days, t)
-runner.Session.step = _orig_step
+with patch.object(runner.Session, "initial_events", _spy_initial_events), patch.object(runner.Session, "step", _spy):
+    report = soak.run_soak(seed, days, t)
 
-plan_ok = [d["dishes"] == plans[(day - 1) % len(plans) + 1] for day, n, _, d in seen if n == "day_plan"]
+expected_days = list(range(1, days + 1))
+plan_events = [(day, d["dishes"]) for day, n, _, d in seen if n == "day_plan"]
+expected_plans = [(day, plans[(day - 1) % len(plans) + 1]) for day in expected_days]
+plan_ok = plan_events == expected_plans
 ids = [x["id"] for day, n, _, d in seen if n == "gather_end" for x in d["inventory"]["items"]]
+ids_ok = len(ids) == len(set(ids))
 phases = {}
 for day, n, ph, _ in seen:
     if n == "phase_start":
         phases.setdefault(day, []).append(ph)
+phases_ok = phases == {day: ["gather", "quan", "shop"] for day in expected_days}
 earned = [r["earned"] for r in report["results"]]
+earned_ok = len(earned) == days and earned == sorted(earned)
 print("soak:", {k: report[k] for k in ("days", "days_completed", "crashes")})
-print("day_plan Ngày 2..%d khớp D((n-1)%%5+1): %s (%d/%d)" % (days, all(plan_ok), sum(plan_ok), len(plan_ok)))
-print("id cá thể không trùng xuyên %d Ngày: %s | tổng %d" % (days, len(ids) == len(set(ids)), len(ids)))
-print("mỗi Ngày có phase_start quan + shop:", all(phases.get(d, [])[-2:] == ["quan", "shop"] or
-                                                    phases.get(d, []) [:2] == ["quan", "shop"] for d in range(1, days + 1)))
-print("earned không giảm:", earned == sorted(earned), earned)
+print(f"day_plan Ngày 1..{days} khớp D((n-1)%5+1): {plan_ok} ({len(plan_events)}/{days})")
+print(f"id cá thể không trùng xuyên {days} Ngày: {ids_ok} | tổng {len(ids)}")
+print("mỗi Ngày có phase_start gather → quan → shop:", phases_ok)
+print("earned không giảm:", earned_ok, earned)
+soak_ok = report["days_completed"] == days and report["crashes"] == 0
+sys.exit(0 if all((soak_ok, plan_ok, ids_ok, phases_ok, earned_ok)) else 1)

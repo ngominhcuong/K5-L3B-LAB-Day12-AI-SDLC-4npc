@@ -10,6 +10,7 @@
 - `soak_cmd` = `python3 -m chonoi.soak --seed <int> --days <N> --out <soak.json>` (`ngominhcuong`):
   - Chạy N Ngày bằng bot tất định trong một tiến trình.
   - Xuất `soak.json` gồm `{days, days_completed, crashes, results[{day, earned, reputation, score}], duration_s}`.
+  - Mã thoát `0` khi hoàn tất, `1` khi có lỗi hoặc chưa hoàn tất, `2` khi đầu vào sai.
 - `contract_version: "1.3"`, khai `soak_cmd`. Gameplay, tuning, kho, JSONL giữ như v1.2 (output giống từng byte bằng chứng P3).
 - Kịch bản demo `docs/demo.md`; công cụ QA `tools/qa_soak_trace.py`.
 

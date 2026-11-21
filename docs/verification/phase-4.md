@@ -19,6 +19,15 @@
 | AC-P4-11 | Cập nhật clarify, ai-usage-log; retro rà hành động P2; `docs/members/<handle>.md` đủ 6 người | Đọc file | [clarify.md](../clarify.md), [ai-usage-log.md](../ai-usage-log.md), [members/](../members/) | **Một phần**: QA đã cập nhật phần mình; retro P4 và phản tư của người khác do từng người viết |
 | AC-P4-12 | Mở rộng (nhóm 6 người ≥ 2 mục) có test và bằng chứng | | | **Chưa làm** |
 
+## Kiểm lại sau khi xử lý xung đột
+
+Bản merge local của `453b482` và `afb70a8` chạy trên Windows với Python 3.12.10. Các log trong bảng ghi kết quả lịch sử trên Linux.
+
+- `python -m unittest discover -s tests -v` với `PYTHONPATH=tests;.` đạt 91/91, gồm cả `test_soak.py` và `test_soak_p4.py`.
+- Hai lần chạy `python -m chonoi.soak --seed 7 --days 10 --out <file>` hoàn tất 10/10 Ngày và không có crash. Các trường gameplay khớp nhau và khớp [kết quả đã lưu](../proof/phase-4/soak.json). Mô phỏng crash sau Ngày 1 trả mã `1` và vẫn ghi kết quả của Ngày 1. Báo cáo chưa hoàn tất cũng trả mã `1`.
+- `python tools/qa_soak_trace.py 7 10` với `PYTHONPATH=.` xác nhận 10/10 kế hoạch, thứ tự gather → quan → shop, 40 ID cá thể không trùng và `earned` không giảm. Nâng cấp `oxygen` có hiệu lực từ Ngày 9.
+- Chạy lại [inputs Phase 3](../proof/phase-3/integration.md). Kho, JSONL của gather, quan và day5 khớp bản lưu sau khi chuẩn hóa xuống dòng. Cả 5 lượt bàn giao kho và 23 lần chốt giá đều đạt.
+
 ## Rủi ro / việc cần chốt người nhận trước 3:00
 
 - **`bench_cmd` (AC-P4-02):** cảnh render nằm trong trình duyệt (`index.html`, canvas + `requestAnimationFrame`). Đề xuất (clarify #9):

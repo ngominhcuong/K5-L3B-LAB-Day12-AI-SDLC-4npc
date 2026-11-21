@@ -1,4 +1,7 @@
-"""Soak headless (Contract v1.3): python3 -m chonoi.soak --seed 7 --days 10 --out soak.json."""
+"""Soak headless (Contract v1.3): python3 -m chonoi.soak --seed 7 --days 10 --out soak.json.
+
+Mã thoát: 0 khi hoàn tất mọi Ngày, 1 khi soak lỗi hoặc chưa xong, 2 khi đầu vào sai.
+"""
 
 import argparse
 import json
@@ -128,13 +131,17 @@ class _DeterministicBot:
         return InputState(move, {}, edges, buy=buy)
 
 
-def run_soak(seed: int, days: int, tuning: dict) -> dict:
+def run_soak(seed: int, days: int, tuning: dict | None = None) -> dict:
+    """Chạy các Ngày trong một Session. Bỏ duration_s khi so tính tất định."""
+    if tuning is None:
+        tuning = load_contract()["tuning"]
     t0 = time.perf_counter()
     crashes = 0
     results = []
     days_completed = 0
     try:
         sess = Session("day", tuning, {}, seed=seed, days=days)
+        sess.initial_events()
         bot = _DeterministicBot(tuning)
         max_ticks = days * 23000
         for _ in range(max_ticks):
@@ -154,6 +161,8 @@ def run_soak(seed: int, days: int, tuning: dict) -> dict:
         days_completed = sess.sim.days_completed
     except Exception as e:
         crashes += 1
+        # Giữ các Ngày đã ghi nhận shop_end nếu mô phỏng vấp lỗi giữa chừng.
+        days_completed = len(results)
         sys.stderr.write(f"lỗi soak: {e}\n")
     return {
         "days": days,
@@ -189,7 +198,11 @@ def main(argv=None) -> int:
     except OSError as e:
         sys.stderr.write(f"lỗi ghi: {e}\n")
         return 1
-    return 0
+    print(f"soak seed={a.seed} days={a.days} days_completed={report['days_completed']} "
+          f"crashes={report['crashes']} duration_s={report['duration_s']}", file=sys.stderr)
+    # Ghi báo cáo trước để QA còn dữ liệu khi soak thất bại hoặc chạm giới hạn tick.
+    ok = report["days_completed"] == a.days and report["crashes"] == 0
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":
