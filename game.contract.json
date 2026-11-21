@@ -6,6 +6,7 @@
   "run_cmd": "python3 -m chonoi.live --mode gather",
   "headless_cmd": "python3 -m chonoi.headless",
   "soak_cmd": "python3 -m chonoi.soak",
+  "bench_cmd": "python3 -m chonoi.bench",
   "tuning": {
     "tick_hz": 60,
     "freshness": {

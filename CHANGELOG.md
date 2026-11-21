@@ -13,12 +13,15 @@
   - Mã thoát `0` khi hoàn tất, `1` khi có lỗi hoặc chưa hoàn tất, `2` khi đầu vào sai.
 - `contract_version: "1.3"`, khai `soak_cmd`. Gameplay, tuning, kho, JSONL giữ như v1.2 (output giống từng byte bằng chứng P3).
 - Kịch bản demo `docs/demo.md`; công cụ QA `tools/qa_soak_trace.py`.
+- `bench_cmd` chạy `python3 -m chonoi.bench`, đo canvas 1280×720 trên Chromium.
+- Phím **H** bật chế độ tương phản cao cho ba cảnh báo Thủy quái, Hết hơi và Sắp rời bàn (`nguyenquangtiep`, PR #33).
+- Hướng dẫn chạy, kiểm tra và đóng gói bản phát hành.
 
 ### Changed
 - `--mode day` cho Ngày 6+ dùng lại kế hoạch D1–D5 (Ngày n dùng D((n − 1) mod 5 + 1)). Headless vẫn giới hạn `--days 1..5`.
 
-### Chưa xong
-- `bench_cmd`, chế độ tương phản cao, README hướng dẫn chạy, `LICENSE`, Release v1.0.0.
+### Fixed
+- W/S và phím mũi tên theo đúng hướng khi vào quán từ chế độ `day`, kể cả khi giữ phím lúc chuyển pha.
 
 ## [phase-3] Test Contract v1.2 · Change Request "Mùa Nước Nổi"
 
