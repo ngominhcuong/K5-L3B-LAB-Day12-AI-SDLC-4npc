@@ -29,7 +29,9 @@ class QuanSim:
             self.day_dishes = set(self.menu)
         else:
             from ..errors import BadInput
-            plan = next((p for p in tuning["day_plan"] if p["day"] == day), None)
+            plans = tuning["day_plan"]
+            plan_day = ((day - 1) % len(plans)) + 1
+            plan = next((p for p in plans if p["day"] == plan_day), None)
             if plan is None:
                 raise BadInput(f"ngày không có trong day_plan: {day}")
             self.day_dishes = set(plan["dishes"])

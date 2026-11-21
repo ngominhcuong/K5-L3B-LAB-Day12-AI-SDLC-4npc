@@ -54,7 +54,8 @@ class DaySim:
         return self._sub.time_left_ticks
 
     def _current_plan(self):
-        return self.plans[self.day]
+        plan_day = ((self.day - 1) % len(self.plans)) + 1
+        return self.plans[plan_day]
 
     def _day_tuning(self):
         t = copy.deepcopy(self.tuning)
