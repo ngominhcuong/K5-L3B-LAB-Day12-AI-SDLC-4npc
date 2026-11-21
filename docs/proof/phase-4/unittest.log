@@ -84,15 +84,15 @@ test_time_ends_gather_and_keeps_hold (test_smoke_p1.Movement.test_time_ends_gath
 test_khoi_sai_mode_exit_2 (test_smoke_p1.ScenarioModes.test_khoi_sai_mode_exit_2) ... ok
 test_quan_fixture_khong_hop_le_exit_2 (test_smoke_p1.ScenarioModes.test_quan_fixture_khong_hop_le_exit_2) ... ok
 test_quan_player_vel_hop_le (test_smoke_p1.ScenarioModes.test_quan_player_vel_hop_le) ... ok
-test_day6_reuses_d1_plan (test_soak_p4.DayPlanCycles.test_day6_reuses_d1_plan) ... ok
-test_bad_args_exit_2 (test_soak_p4.SoakCmd.test_bad_args_exit_2) ... ok
-test_soak_json_shape_pass_and_deterministic (test_soak_p4.SoakCmd.test_soak_json_shape_pass_and_deterministic) ... ok
+test_soak_10_days_deterministic_and_repeats_plan (test_soak.SoakTests.test_soak_10_days_deterministic_and_repeats_plan) ... ok
+test_soak_cli_writes_json_and_rejects_bad_days (test_soak.SoakTests.test_soak_cli_writes_json_and_rejects_bad_days) ... đầu vào sai: --days phải >= 1
+ok
 test_good (test_team_check.TeamCheck.test_good) ... ok
 test_template_is_rejected (test_team_check.TeamCheck.test_template_is_rejected) ... ok
 test_too_few_members (test_team_check.TeamCheck.test_too_few_members) ... ok
 test_wrong_size_duplicate_and_outsider (test_team_check.TeamCheck.test_wrong_size_duplicate_and_outsider) ... ok
 
 ----------------------------------------------------------------------
-Ran 89 tests in 12.026s
+Ran 88 tests in 28.997s
 
 OK

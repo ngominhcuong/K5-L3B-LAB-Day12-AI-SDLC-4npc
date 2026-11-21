@@ -1,11 +1,12 @@
-# Clone sạch tại 75698f3 (Linux, Python 3.14.4, không cài thêm gói)
-HEAD 75698f3
+# Clone sạch tại af84564 (Linux, Python 3.14.4, không cài thêm gói)
+HEAD af84564
 $ PYTHONPATH=tests:. python3 -m unittest discover -s tests
+Ran 88 tests in 25.995s
 
 OK
 $ python3 -m chonoi.soak --seed 7 --days 10 --out soak.json
-soak seed=7 days=10 days_completed=10 crashes=0 duration_s=8.086
-exit=0
-$ python3 -m chonoi.live --mode day --port 8799   (kiểm server lên, trả trang và /state)
+exit=0 days_completed=10 crashes 0
+$ python3 -m chonoi.live --mode day --port 8799
 GET / -> 200
 GET /state -> mode day phase gather day 1
+server stopped

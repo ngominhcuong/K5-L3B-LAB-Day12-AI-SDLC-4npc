@@ -1,4 +1,4 @@
-# Regression smoke P2–P3 tại 75698f3 (inputs P3)
+# Regression smoke P2–P3 (inputs P3) trên main 54a98cf + contract 1.3
    quan tick0 stock==gather_end: True phase_tick 0
    quan tick0 stock==gather_end: True phase_tick 0
    quan tick0 stock==gather_end: True phase_tick 0
@@ -9,3 +9,4 @@ bad monster_hit: []
 integration kho == P3 proof (byte-identical)
 integration quan == P3 proof (byte-identical)
 day5 == P3 proof (byte-identical)
+cook_started checked: 23; bad: []
